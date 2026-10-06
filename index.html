@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KPI – Operações com Drones</title>
+<style>
+:root{--bg:#070d1f;--bg2:#0b1530;--card:#0e1a38;--line:#1c2e5a;--tx:#e8eefc;--mut:#8196c4;--b1:#3b82f6;--b2:#60a5fa;--cy:#22d3ee;--am:#fbbf24;--gr:#34d399;--rd:#f87171;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(1200px 600px at 85% -10%,#12307a55,transparent),var(--bg);color:var(--tx);font:14px/1.45 "Inter","Segoe UI",system-ui,-apple-system,Arial,sans-serif;min-height:100vh}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 20px 40px}
+header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+h1{margin:0;font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+h1 span{display:block;color:var(--b1)}
+.sub{color:var(--mut);margin-top:8px;max-width:46ch}
+.chip{border:1px solid var(--line);background:var(--bg2);border-radius:10px;padding:8px 14px;color:var(--mut);font-size:13px}
+.chip b{color:var(--tx);font-weight:600}
+.filtro{border:1px solid var(--line);background:var(--bg2);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;min-width:260px}
+.fl{display:flex;gap:10px;flex-wrap:wrap}
+.filtro label{color:var(--mut);font-size:12px;display:flex;align-items:center;gap:6px}
+.filtro input{background:#0a1530;color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;color-scheme:dark}
+.filtro input:focus-visible,.pre button:focus-visible{outline:2px solid var(--b2);outline-offset:1px}
+.pre{display:flex;gap:6px;flex-wrap:wrap}
+.pre button{background:transparent;color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:4px 11px;font:inherit;font-size:12px;cursor:pointer}
+.pre button:hover{color:var(--tx)}
+.pre button.on{background:var(--b1);border-color:var(--b1);color:#fff}
+.cnt{font-size:12px;color:var(--mut)}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:14px}
+.row{grid-template-columns:repeat(12,1fr);margin-bottom:14px}
+.card{background:linear-gradient(180deg,var(--card),#0a1530);border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-width:0}
+.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+@media(max-width:900px){.c4,.c5,.c6,.c7,.c8{grid-column:span 12}}
+h2{margin:0 0 12px;font-size:13px;font-weight:600;color:var(--mut);letter-spacing:.01em}
+.kpi .v{font-size:28px;font-weight:700;letter-spacing:-.02em;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12px;color:var(--mut)}
+.kpi .d i{font-style:normal;font-weight:600}
+.up{color:var(--gr)}.dn{color:var(--rd)}
+.kpi svg{display:block;width:100%;height:34px;margin-top:8px}
+svg text{fill:var(--mut);font:11px "Inter","Segoe UI",Arial,sans-serif}
+svg .t{fill:var(--tx)}
+.chart{width:100%;height:auto;display:block}
+.legend{display:flex;flex-direction:column;gap:8px;justify-content:center}
+.legend div{display:flex;align-items:center;gap:8px;font-size:13px}
+.legend i{width:10px;height:10px;border-radius:50%;flex:none}
+.legend em{margin-left:auto;font-style:normal;color:var(--mut);padding-left:12px}
+.donut{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.donut svg{width:150px;height:150px;flex:none}
+.legend{flex:1;min-width:170px}
+.bars .r{display:grid;grid-template-columns:minmax(80px,38%) 1fr auto;gap:10px;align-items:center;margin:9px 0;font-size:13px}
+.bars .tr{height:9px;background:#13244a;border-radius:6px;overflow:hidden}
+.bars .tr b{display:block;height:100%;background:linear-gradient(90deg,var(--b1),var(--cy));border-radius:6px}
+.bars .n{color:var(--mut);font-variant-numeric:tabular-nums;text-align:right}
+.scroll{overflow:auto;max-height:440px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+th{position:sticky;top:0;background:#0e1a38;color:var(--mut);font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid #12224a}
+tr:last-child td{border-bottom:0}
+.tag{padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}
+.ok{background:#0f3a33;color:var(--gr)}.no{background:#3a1b22;color:var(--rd)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+footer{color:var(--mut);font-size:12px;margin-top:18px}
+@media(prefers-reduced-motion:no-preference){.ring{animation:dr 1s ease-out both}@keyframes dr{from{stroke-dasharray:0 999}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Operações com drones<span>Visão geral dos KPIs</span></h1>
+    <div class="sub">Valores, objetivos e limites verticais de cada operação, mês a mês.</div>
+  </div>
+  <div class="filtro"><div class="fl"><label>De <input type="date" id="de"></label><label>até <input type="date" id="ate"></label></div><div class="pre" id="pre"></div><div class="cnt" id="cnt"></div></div>
+</header>
+
+<section class="grid kpis" id="kpis"></section>
+
+<section class="grid row">
+  <div class="card c8"><h2>Valor por mês (R$)</h2><div id="trend"></div></div>
+  <div class="card c4"><h2>Operações por objetivo</h2><div class="donut" id="donut"></div></div>
+</section>
+
+<section class="grid row">
+  <div class="card c7"><h2>Limites verticais por objetivo (mín. a máx., ponto = média)</h2><div id="lim"></div></div>
+  <div class="card c5"><h2>Objetivo da operação por mês</h2><div id="stack"></div></div>
+</section>
+
+<section class="grid row">
+  <div class="card c4"><h2>Valor por aeroporto</h2><div class="bars" id="aero"></div></div>
+  <div class="card c4"><h2>Valor por objetivo</h2><div class="bars" id="objv"></div></div>
+  <div class="card c4"><h2>Pagamento</h2><div id="pay"></div></div>
+</section>
+
+<section class="grid row">
+  <div class="card c12"><h2>Operações registradas</h2><div class="scroll"><table id="tbl"></table></div></div>
+</section>
+<footer>Dados da planilha Relação_dos_Drones.xlsx (aba Plan1). Para incluir novas operações, envie a planilha atualizada no chat para republicar. Limites verticais em metros.</footer>
+</div>
+
+<script>
+// ---- DADOS (snapshot da aba Plan1) ----
+const ALL=[
+ {id:55,data:"2025-08-26",turno:"Diurno",aero:"SDUB",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:30,pago:true,motivo:"-",valor:527.72},
+ {id:56,data:"2025-08-24",turno:"Diurno",aero:"SDAM",obj:"Fiscalização",tipo:"VLOS",lim:120,pago:false,motivo:"Governamental",valor:0},
+ {id:57,data:"2025-08-23",turno:"Diurno",aero:"SDAM",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:100,pago:true,motivo:"-",valor:343.09},
+ {id:59,data:"2025-10-04",turno:"Diurno",aero:"SBJD",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:100,pago:true,motivo:"-",valor:263.67},
+ {id:60,data:"2025-09-19",turno:"Diurno",aero:"SBJD",obj:"Gravação de Evento - Área Externa",tipo:"VLOS",lim:25,pago:true,motivo:"-",valor:343.09},
+ {id:61,data:"2025-06-18",turno:"Diurno",aero:"SDCO",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:15,pago:false,motivo:"Isento",valor:0},
+ {id:62,data:"2025-06-29",turno:"Noturno",aero:"SDUB",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:63,data:"2025-10-09",turno:"Noturno",aero:"SDUB",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:100,pago:false,motivo:"Isento",valor:0},
+ {id:64,data:"2025-10-30",turno:"Diurno",aero:"SBJD",obj:"Gravação de Evento - Área Externa",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:65,data:"2025-11-22",turno:"Diurno",aero:"SDSC",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:66,data:"2026-02-19",turno:"Diurno",aero:"SDUB",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:120,pago:false,motivo:"Governamental",valor:0},
+ {id:67,data:"2026-01-21",turno:"Diurno",aero:"SDUB",obj:"Gravação de Evento - Área Externa",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:68,data:"2026-01-20",turno:"Diurno",aero:"SDUB",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:69,data:"2026-02-05",turno:"Diurno",aero:"SBRP",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:70,data:"2026-01-31",turno:"Diurno",aero:"SBJD",obj:"Inspeção de Estrutura",tipo:"BVLOS",lim:30,pago:true,motivo:"-",valor:196.86},
+ {id:71,data:"2026-02-23",turno:"Diurno",aero:"SBJD",obj:"Gravação de Evento - Área Externa",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:72,data:"2026-02-26",turno:"Diurno",aero:"SSRG",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:120,pago:false,motivo:"Isento",valor:0},
+ {id:74,data:"2026-04-08",turno:"Diurno",aero:"SDAM",obj:"Treinamento",tipo:"VLOS",lim:60,pago:false,motivo:"Governamental",valor:0},
+ {id:75,data:"2026-03-10",turno:"Diurno",aero:"SBGW",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:76,data:"2026-04-27",turno:"Diurno",aero:"SBRP",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:77,data:"2026-06-17",turno:"Diurno",aero:"SBGW",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:30,pago:false,motivo:"Isento",valor:0},
+ {id:78,data:"2026-05-18",turno:"Diurno",aero:"SBJD",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:50,pago:false,motivo:"Isento",valor:0},
+ {id:79,data:"2026-05-26",turno:"Diurno",aero:"SDRR",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:100,pago:true,motivo:"-",valor:393.73},
+ {id:80,data:"2026-05-24",turno:"Diurno",aero:"SBAE",obj:"Gravação de Evento - Área Externa",tipo:"VLOS",lim:30,pago:true,motivo:"-",valor:244.91},
+ {id:81,data:"2026-06-08",turno:"Diurno",aero:"SDCO",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:30,pago:true,motivo:"-",valor:393.73},
+ {id:82,data:"2026-06-02",turno:"Diurno",aero:"SBAE",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:30,pago:true,motivo:"-",valor:393.73},
+ {id:83,data:"2026-06-08",turno:"Diurno",aero:"SBJD",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:50,pago:false,motivo:"Isento",valor:0},
+ {id:84,data:"2026-06-10",turno:"Diurno",aero:"SDAM",obj:"Treinamento",tipo:"VLOS",lim:60,pago:false,motivo:"Governamental",valor:0},
+ {id:85,data:"2026-06-26",turno:"Diurno",aero:"SDCO",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:100,pago:true,motivo:"-",valor:393.73},
+ {id:86,data:"2026-06-08",turno:"Diurno",aero:"SBJD",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:50,pago:false,motivo:"Isento",valor:0},
+ {id:"86.2",data:"2026-06-22",turno:"Diurno",aero:"SBAE",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:60,pago:false,motivo:"Isento",valor:0},
+ {id:87,data:"2026-08-08",turno:"Noturno",aero:"SDCO",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:50,pago:false,motivo:"Isento",valor:0},
+ {id:88,data:"2026-08-01",turno:"Noturno",aero:"SBRP",obj:"Gravação de Evento - Área Externa",tipo:"VLOS",lim:10,pago:true,motivo:"-",valor:393.73},
+ {id:89,data:"2026-08-01",turno:"Diurno",aero:"SBJD",obj:"Gravação de Evento - Área Interna",tipo:"VLOS",lim:20,pago:true,motivo:"-",valor:393.73},
+ {id:90,data:"2026-08-17",turno:"Diurno",aero:"SDCO",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:60,pago:true,motivo:"-",valor:393.73},
+ {id:91,data:"2026-09-09",turno:"Diurno",aero:"SDAM",obj:"Inspeção de Estrutura",tipo:"VLOS",lim:45,pago:false,motivo:"Governamental",valor:0},
+ {id:92,data:"2026-09-02",turno:"Diurno",aero:"SSRG",obj:"Gravação de Evento - Área Externa",tipo:"VLOS",lim:40,pago:false,motivo:"Governamental",valor:0},
+ {id:93,data:"2026-10-09",turno:"Diurno",aero:"SDAM",obj:"Gravação de Evento - Área Externa",tipo:"VLOS",lim:30,pago:false,motivo:"Governamental",valor:0}
+];
+let DADOS=ALL;
+const COR=["#3b82f6","#22d3ee","#60a5fa","#fbbf24","#a78bfa","#34d399"];
+const MES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const brl=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const fdata=s=>s.split("-").reverse().join("/");
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const $=id=>document.getElementById(id);
+const OBJ_ALL=[...new Set(ALL.map(d=>d.obj))].sort((a,b)=>ALL.filter(d=>d.obj===b).length-ALL.filter(d=>d.obj===a).length);
+const colorOf=n=>COR[OBJ_ALL.indexOf(n)%6];
+const uniq=k=>[...new Set(DADOS.map(d=>d[k]))];
+const grp=(k,f)=>uniq(k).map(n=>{const r=DADOS.filter(d=>d[k]===n);return {n,r,ops:r.length,val:sum(r.map(x=>x.valor)),...f?.(r)}});
+
+const minA=ALL.map(d=>d.data).sort()[0],maxA=ALL.map(d=>d.data).sort().pop();
+const de=$("de"),ate=$("ate");
+function render(){
+const f=de.value,t=ate.value;
+DADOS=ALL.filter(d=>(!f||d.data>=f)&&(!t||d.data<=t));
+[...$("pre").children].forEach((b,i)=>b.classList.toggle("on",P[i][1]===f&&P[i][2]===t));
+$("cnt").textContent=`${DADOS.length} de ${ALL.length} operações`;
+if(!DADOS.length){["trend","donut","lim","stack","aero","objv","pay","tbl"].forEach(i=>$(i).innerHTML="");$("kpis").innerHTML='<div class="card">Nenhuma operação no período selecionado.</div>';return}
+const ds=DADOS.map(d=>d.data).sort();
+const a=(f&&f>minA?f:minA).split("-").map(Number),b=(t&&t<maxA?t:maxA).split("-").map(Number);
+let [y,m]=a;const meses=[];
+while(y*12+m<=b[0]*12+b[1]&&meses.length<120){meses.push({y,m,k:`${y}-${String(m).padStart(2,"0")}`,l:`${MES[m-1]}/${String(y).slice(2)}`});m++;if(m>12){m=1;y++}}
+const porMes=meses.map(x=>{const r=DADOS.filter(d=>d.data.startsWith(x.k));return {...x,r,ops:r.length,val:sum(r.map(d=>d.valor)),pagas:r.filter(d=>d.pago).length}});
+
+// ---- KPIs ----
+const tot=DADOS.length,pagas=DADOS.filter(d=>d.pago).length,vt=sum(DADOS.map(d=>d.valor));
+const limMed=sum(DADOS.map(d=>d.lim))/tot,limMax=Math.max(...DADOS.map(d=>d.lim));
+function spark(vals,c){const w=200,h=34,mx=Math.max(...vals,1),st=w/(vals.length-1||1);
+ const p=vals.map((v,i)=>[i*st,h-3-(v/mx)*(h-8)]);const ln=p.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join("");
+ return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><defs><linearGradient id="g${c.slice(1)}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c}" stop-opacity=".35"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></linearGradient></defs><path d="${ln}L${w} ${h}L0 ${h}Z" fill="url(#g${c.slice(1)})"/><path d="${ln}" fill="none" stroke="${c}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
+const ativos=porMes.filter(x=>x.ops>0);
+const delta=(a,b)=>b?`<i class="${a>=b?"up":"dn"}">${a>=b?"▲":"▼"} ${Math.abs((a/b-1)*100).toFixed(0)}%</i> vs ${pen.l}`:"";
+const paso=Math.ceil(porMes.length/9);
+const ult=ativos[ativos.length-1],pen=ativos[ativos.length-2];
+const K=[
+ ["Total de operações",tot,`${tot-pagas} não paga(s)`,porMes.map(x=>x.ops),COR[0]],
+ ["Valor total",brl(vt),pen&&pen.val?delta(ult.val,pen.val):"",porMes.map(x=>x.val),COR[1]],
+ ["Ticket médio",brl(pagas?vt/pagas:0),"por operação paga",porMes.map(x=>x.pagas?x.val/x.pagas:0),COR[2]],
+ ["Operações pagas",`${(pagas/tot*100).toFixed(0)}%`,`${pagas} de ${tot}`,porMes.map(x=>x.pagas),COR[5]],
+ ["Limite vertical médio",`${limMed.toFixed(0)} m`,`máximo ${limMax} m`,porMes.map(x=>x.r.length?sum(x.r.map(d=>d.lim))/x.r.length:0),COR[3]]
+];
+$("kpis").innerHTML=K.map(k=>`<div class="card kpi"><h2>${k[0]}</h2><div class="v">${k[1]}</div><div class="d">${k[2]}</div>${spark(k[3],k[4])}</div>`).join("");
+
+// ---- Tendência de valor ----
+(function(){const W=720,H=250,L=50,R=14,T=14,B=30,v=porMes.map(x=>x.val),mx=Math.max(...v,1)*1.15,n=v.length;
+ const X=i=>L+(W-L-R)*(n>1?i/(n-1):.5),Y=x=>T+(H-T-B)*(1-x/mx);
+ let s=`<svg class="chart" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6" stop-opacity=".4"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>`;
+ for(let i=0;i<=4;i++){const yv=mx*i/4,y=Y(yv);s+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="#1c2e5a" stroke-dasharray="3 4"/><text x="${L-8}" y="${y+4}" text-anchor="end">${Math.round(yv)}</text>`}
+ const pts=v.map((x,i)=>`${X(i)},${Y(x)}`);
+ s+=`<path d="M${pts.join("L")}L${X(n-1)},${Y(0)}L${X(0)},${Y(0)}Z" fill="url(#ga)"/><path d="M${pts.join("L")}" fill="none" stroke="#60a5fa" stroke-width="2.5"/>`;
+ porMes.forEach((x,i)=>{if(i%paso===0)s+=`<text x="${X(i)}" y="${H-8}" text-anchor="middle">${x.l}</text>`;
+  if(x.val>0)s+=`<circle cx="${X(i)}" cy="${Y(x.val)}" r="4.5" fill="#070d1f" stroke="#22d3ee" stroke-width="2"/><text class="t" x="${X(i)}" y="${Y(x.val)-12}" text-anchor="middle" style="font-weight:600">${porMes.length>8?Math.round(x.val):brl(x.val)}</text>`});
+ $("trend").innerHTML=s+"</svg>"})();
+
+// ---- Donut por objetivo ----
+const objs=grp("obj",r=>({min:Math.min(...r.map(x=>x.lim)),max:Math.max(...r.map(x=>x.lim)),avg:sum(r.map(x=>x.lim))/r.length}));
+(function(){const R=52,C=2*Math.PI*R;let off=0,s=`<svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="${R}" fill="none" stroke="#13244a" stroke-width="20"/>`;
+ objs.forEach((o,i)=>{const f=o.ops/tot*C;s+=`<circle class="ring" cx="75" cy="75" r="${R}" fill="none" stroke="${colorOf(o.n)}" stroke-width="20" stroke-dasharray="${f-2} ${C-f+2}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)"/>`;off+=f});
+ s+=`<text class="t" x="75" y="73" text-anchor="middle" style="font:700 24px Inter,Arial">${tot}</text><text x="75" y="90" text-anchor="middle">operações</text></svg>`;
+ $("donut").innerHTML=s+`<div class="legend">${objs.map((o,i)=>`<div><i style="background:${colorOf(o.n)}"></i>${o.n}<em>${(o.ops/tot*100).toFixed(0)}%</em></div>`).join("")}</div>`})();
+
+// ---- Limites verticais ----
+(function(){const mx=Math.max(120,limMax),W=640,rh=46,H=objs.length*rh+34,L=225,R=24,X=v=>L+(W-L-R)*v/mx;
+ let s=`<svg class="chart" viewBox="0 0 ${W} ${H}">`;
+ [0,.25,.5,.75,1].forEach(f=>{const x=X(mx*f);s+=`<line x1="${x}" x2="${x}" y1="6" y2="${H-26}" stroke="#1c2e5a" stroke-dasharray="3 4"/><text x="${x}" y="${H-8}" text-anchor="middle">${Math.round(mx*f)} m</text>`});
+ objs.forEach((o,i)=>{const y=14+i*rh,c=colorOf(o.n);
+  const nm=o.n;
+  s+=`<text class="t" x="${L-12}" y="${y+14}" text-anchor="end">${nm}</text>`;
+  s+=`<rect x="${X(0)}" y="${y+4}" width="${X(mx)-X(0)}" height="14" rx="7" fill="#12224a"/>`;
+  const x0=X(o.min),x1=Math.max(X(o.max),x0+10);
+  s+=`<rect x="${x0}" y="${y+4}" width="${x1-x0}" height="14" rx="7" fill="${c}" opacity=".85"/><circle cx="${X(o.avg)}" cy="${y+11}" r="6" fill="#fff" stroke="${c}" stroke-width="3"/>`;
+  s+=`<text x="${Math.min(x1+8,W-60)}" y="${y+16}" style="fill:#e8eefc;font-weight:600">${o.min===o.max?o.max+" m":o.min+"–"+o.max+" m"}</text>`});
+ $("lim").innerHTML=s+"</svg>"})();
+
+// ---- Objetivo por mês (empilhado) ----
+(function(){const W=420,H=250,L=30,R=8,T=12,B=30,n=porMes.length,mx=Math.max(...porMes.map(x=>x.ops),2),bw=(W-L-R)/n,Y=v=>T+(H-T-B)*(1-v/mx);
+ let s=`<svg class="chart" viewBox="0 0 ${W} ${H}">`;
+ for(let v=0;v<=mx;v++)s+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#1c2e5a" stroke-dasharray="3 4"/><text x="${L-8}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;
+ porMes.forEach((x,i)=>{const cx=L+bw*i+bw/2;let acc=0;
+  objs.forEach((o,j)=>{const q=x.r.filter(d=>d.obj===o.n).length;if(q){s+=`<rect x="${cx-bw*.3}" y="${Y(acc+q)}" width="${bw*.6}" height="${Y(acc)-Y(acc+q)-2}" rx="3" fill="${colorOf(o.n)}"/>`;acc+=q}});
+  if(i%paso===0)s+=`<text x="${cx}" y="${H-8}" text-anchor="middle">${x.l}</text>`});
+ $("stack").innerHTML=s+`</svg><div class="legend" style="flex-direction:row;flex-wrap:wrap;gap:6px 14px;margin-top:6px">${objs.map((o,i)=>`<div style="font-size:12px"><i style="background:${colorOf(o.n)}"></i>${o.n}</div>`).join("")}</div>`})();
+
+// ---- Barras: aeroporto e objetivo ----
+function barras(id,g){const mx=Math.max(...g.map(x=>x.val),1);
+ $(id).innerHTML=g.sort((a,b)=>b.val-a.val||b.ops-a.ops).map(x=>`<div class="r"><span>${x.n} <small style="color:var(--mut)">(${x.ops})</small></span><div class="tr"><b style="width:${x.val/mx*100}%"></b></div><span class="n">${brl(x.val)}</span></div>`).join("")}
+barras("aero",grp("aero"));barras("objv",grp("obj"));
+
+// ---- Pagamento ----
+(function(){const np=tot-pagas,mot={};DADOS.filter(d=>!d.pago).forEach(d=>mot[d.motivo]=(mot[d.motivo]||0)+1);
+ $("pay").innerHTML=`<div style="display:flex;height:12px;border-radius:7px;overflow:hidden;background:#13244a"><div style="width:${pagas/tot*100}%;background:var(--gr)"></div><div style="width:${np/tot*100}%;background:var(--rd)"></div></div>
+ <div class="legend" style="margin-top:14px"><div><i style="background:var(--gr)"></i>Pagas<em>${pagas}</em></div><div><i style="background:var(--rd)"></i>Não pagas<em>${np}</em></div>
+ ${Object.entries(mot).map(([k,q])=>`<div style="padding-left:18px;color:var(--mut)">${k}<em>${q}</em></div>`).join("")}</div>`})();
+
+// ---- Tabela ----
+$("tbl").innerHTML=`<tr><th>ID</th><th>Data</th><th>Turno</th><th>Aeroporto</th><th>Objetivo</th><th>Tipo</th><th class="num">Limite vertical</th><th>Pago?</th><th class="num">Valor</th></tr>`+
+ [...DADOS].sort((a,b)=>b.data.localeCompare(a.data)).map(d=>`<tr><td>${d.id}</td><td>${fdata(d.data)}</td><td>${d.turno}</td><td>${d.aero}</td><td>${d.obj}</td><td>${d.tipo}</td><td class="num">${d.lim} m</td><td><span class="tag ${d.pago?"ok":"no"}">${d.pago?"Sim":"Não"}</span></td><td class="num">${d.pago?brl(d.valor):"-"}</td></tr>`).join("");
+}
+const iso=d=>d.toISOString().slice(0,10);
+const yrs=[...new Set(ALL.map(d=>d.data.slice(0,4)))].sort();
+const d90=iso(new Date(Date.parse(maxA)-89*864e5));
+const P=[["Tudo",minA,maxA],["Últimos 90 dias",d90<minA?minA:d90,maxA],...yrs.map(y=>[y,y+"-01-01">minA?y+"-01-01":minA,y+"-12-31"<maxA?y+"-12-31":maxA])];
+$("pre").innerHTML=P.map((p,i)=>`<button type="button" data-i="${i}">${p[0]}</button>`).join("");
+$("pre").onclick=e=>{const b=e.target.closest("button");if(!b)return;const p=P[b.dataset.i];de.value=p[1];ate.value=p[2];render()};
+de.min=ate.min=minA;de.max=ate.max=maxA;de.value=minA;ate.value=maxA;
+de.onchange=ate.onchange=render;
+render();
+</script>
+</body>
+</html>
